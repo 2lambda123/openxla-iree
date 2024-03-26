@@ -10,6 +10,7 @@ from matmul import *
 from batch_matmul import *
 from split_k_matmul import *
 from pathlib import Path
+import fickling
 
 
 ###############################################################################
@@ -222,7 +223,7 @@ class Manifest:
             raise ValueError(f"Could not find : {self.serialized_file_path}")
 
         with open(self.serialized_file_path, "rb") as load_file:
-            self.dispatch_collection_map = pickle.load(load_file)
+            self.dispatch_collection_map = fickling.load(load_file)
 
     def emit(self):
         """Emits the operations in the Manifest to the build directory as MLIR source files.
