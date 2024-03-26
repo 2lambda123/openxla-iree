@@ -24,6 +24,7 @@ from iree.tf.support import module_utils
 from iree.tf.support import tf_utils
 import numpy as np
 import tensorflow.compat.v2 as tf
+import fickling
 
 NUMPY_LINEWIDTH = 120
 INDENT = " " * 2
@@ -145,7 +146,7 @@ class ModuleCall:
     def load(call_dir: str) -> ModuleCall:
         """Loads and returns a trace serialized with ModuleCall.serialize."""
         with open(os.path.join(call_dir, "metadata.pkl"), "rb") as f:
-            kwargs = pickle.load(f)
+            kwargs = fickling.load(f)
 
         for result_type in ["input", "output"]:
             key = f"{result_type}s"  # inputs or outputs
@@ -154,7 +155,7 @@ class ModuleCall:
             files = glob.glob(os.path.join(call_dir, f"{result_type}_*.pkl"))
             for filename in sorted(files):
                 with open(filename, "rb") as f:
-                    kwargs[key].append(pickle.load(f))
+                    kwargs[key].append(fickling.load(f))
 
             # Convert to tuple to match python's return type for multiple results.
             kwargs[key] = tuple(kwargs[key])
@@ -317,7 +318,7 @@ class Trace:
           A Trace deserialized from trace_dir.
         """
         with open(os.path.join(trace_dir, "metadata.pkl"), "rb") as f:
-            load_dict = pickle.load(f)
+            load_dict = fickling.load(f)
         call_dirs = sorted(glob.glob(os.path.join(trace_dir, "call_*")))
         calls = [ModuleCall.load(call_dir) for call_dir in call_dirs]
         load_dict["calls"] = calls
